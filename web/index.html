@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google" value="notranslate">
+  <title>Toy Finder</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="/storage.js"></script>
+  <script src="acorn_interpreter.js"></script>
+  <script src="./blockly_compressed.js"></script>
+  <script src="./blocks_compressed.js"></script>
+  <script src="./javascript_compressed.js"></script>
+  <script src="./build_msg/en.js"></script>
+  <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <!-- Object detecting -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/knn-classifier"></script>
+  <!--<script src="../../blocks/blocks.js"></script>
+  <script src="../../blocks/logic.js"></script>
+  <script src="../../blocks/loops.js"></script>
+  <script src="../../blocks/math.js"></script>
+  <script src="../../blocks/text.js"></script>
+  <script src="../../blocks/mars_rover.js"></script>
+  <script src="../../blocks/lists.js"></script>
+  <script src="../../blocks/colour.js"></script>
+  <script src="../../blocks/variables.js"></script>
+  <script src="../../blocks/procedures.js"></script>
+  <script src="../../generators/javascript.js"></script>
+  <script src="../../generators/javascript/logic.js"></script>
+  <script src="../../generators/javascript/loops.js"></script>
+  <script src="../../generators/javascript/math.js"></script>
+  <script src="../../generators/javascript/text.js"></script>
+  <script src="../../generators/javascript/lists.js"></script>
+  <script src="../../generators/javascript/colour.js"></script>
+  <script src="../../generators/javascript/variables.js"></script>
+  <script src="../../generators/javascript/procedures.js"></script>-->
+</head>
+<body>
+  <!-- <div id="vertical-line"></div> -->
+  <table>
+    <!-- 이미지 분류 / 로봇 컨트롤 / 영상 -->
+    <tr style="width: 100%; height: 50%;">
+      <td style="width: 30%; font-size: 10px; position: relative;">
+        <!-- 이미지 분류 -->
+        <div id="image-classification">
+          <div style="display: flex;">
+            <button id="classA">Add First Label</button>
+            <div id="label_1">0</div>
+          </div>
+          <div style="display: flex;">
+            <button id="classB">Add Second Label</button>
+            <div id="label_2">0</div>
+          </div>
+          <button id="classC">Perform inference </button>
+          <div style="margin-top: 30px;">
+            <div style="display: flex;">
+              <button class="sensor-button" style="width: 260px">Angle</button>
+              <div id="angle" style="background-color: rgb(234, 68, 13);"></div>
+            </div>
+            <div style="display: flex;">
+              <div style="display: flex;">
+                <button class="sensor-button">Front Sensor</button>
+                <div id="frontSensor" style="background-color: rgb(234, 68, 13);"></div>
+              </div>
+              <div style="display: flex;">
+                <button class="sensor-button">Rear Sensor</button>
+                <div id="rearSensor" style="background-color: rgb(234, 68, 13);"></div>
+              </div>
+            </div>
+            <div style="display: flex;">
+              <div style="display: flex;">
+                <button class="sensor-button">Left Sensor</button>
+                <div id="leftSensor" style="background-color: rgb(234, 68, 13);"></div>
+              </div>
+              <div style="display: flex;">
+                <button class="sensor-button">Right Sensor</button>
+                <div id="rightSensor" style="background-color: rgb(234, 68, 13);"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- <button id ="classA">Add first label</button>
+          <button id ="classB">Add second label</button>
+          <button id ="classC">Perform inference </button>
+          <h1 style="color:#007700;">Number of first label </h1>
+          <h1 id="label_1">0</h1>
+          <h1 style="color:#007700;">Number of second label </h1>
+          <h1 id="label_2">0</h1>
+          <h1 style="color:#0000FF;">Angle</h1>
+          <h1 id="angle">0</h1>
+          <h1 style="color:#0000FF;">Front sensor </h1>
+          <h1 id="frontSensor">0</h1>
+          <h1 style="color:#0000FF;">Left sensor </h1>
+          <h1 id="leftSensor">0</h1>
+          <h1 style="color:#0000FF;">Right sensor </h1>
+          <h1 id="rightSensor">0</h1>
+          <h1 style="color:#0000FF;">Rear sensor </h1>
+          <h1 id="rearSensor">0</h1> -->
+        </div>
+      </td>
+      <td style="width: 40%; position: relative;">
+        <div class="control">
+          <!-- 로버 -->
+          <div style="margin-right: 30px;">
+            <h2>Robot Control</h2>
+            <div>
+              <div style="margin-bottom: 5px; font-weight: bold;">Select Channel</div>
+              <select id="channles"></select>
+            </div>
+            <div class="grid-container" style="width: 200px;">
+              <div class="grid-child purple">
+                <button class="button" id="open" style="width: 100%; margin: 10px 0 0 0;">Connect</button>
+              </div>
+              <div class="grid-child green">
+                <button class="button" id="close" style="width: 100%; margin: 10px 0 0 0;">Disconnect</button>
+              </div>
+              <div class="grid-child yellow" style="margin-top: 10px;">
+                <img id="connectId" src="disconnected.png">
+              </div>
+            </div>
+          </div>
+          <!-- 카메라 -->
+          <div>
+            <h2>Camera Connect</h2>
+            <div>
+              <div style="margin-bottom: 5px; font-weight: bold;">Select Channel</div>
+              <select id="cam_channles"></select>
+            </div>
+            <div class="grid-container" style="width: 200px;">
+              <div class="grid-child purple">
+                <button class="button" id="cam_open" style="width: 100%; margin: 10px 0 0 0;">Connect</button>
+              </div>
+              <div class="grid-child green">
+                <button class="button" id="cam_close" style="width: 100%; margin: 10px 0 0 0;">Disconnect</button>
+              </div>
+              <div class="grid-child yellow" style="margin-top: 10px;">
+                <img id="camConnectId" src="disconnected.png">
+              </div>
+            </div>
+          </div>
+          <!-- <div class="col-xxl-4 col-md-6">
+            <div class="card info-card sales-card">
+              <h5 class="card-title">Camera Connect <span>|</span></h5>
+                <div>카메라 채널 선택 : <select id="cam_channles" ></select></div>
+                <div class="grid-container">
+                  <div class="grid-child purple">
+                    <button class="button" id="cam_open"> Connect  </button>
+                  </div>
+                  <div class="grid-child green">
+                    <button class="button" id="cam_close">Disconnect</button>
+                  </div>
+                  <div class="grid-child yellow">
+                    <img id="camConnectId" src="disconnected.png">
+                  </div>
+                  <fieldset>
+                    <label>
+                      <input role="switch" type="checkbox" />
+                      <span>Connect</span>
+                    </label>
+                  </fieldset>
+              </div>
+            </div>
+          </div> -->
+        </div>
+      </td>
+      <td style="width: 30%;">
+        <!-- Video Container -->
+        <div id="video-container">
+          <canvas id="canvas"></canvas>
+        </div>
+      </td>
+    </tr>
+    <!-- 블럭 / 출력 -->
+    <tr style="width: 100%; height: 50%;">
+      <td colspan="3" style="width: 50%;">
+        <div class="division" style="bottom: 0; border-top: 1px solid lightgray;">
+          <!-- 블럭 -->
+          <div style="width: 50%;">
+            <button id="trashButton" class="notext" title="...">
+              <img src='./1x1.gif' class="trash icon21">
+            </button>
+            <button id="runButton" class="notext primary" title="...">
+              <img src='./1x1.gif' class="run icon21">
+            </button>
+            <div id="control-container" style="height: 100%; width: 100%;"></div>
+          </div>
+          <!-- 출력창 -->
+          <div style="width: 50%;">
+            <textarea id="output" disabled="disabled"></textarea>
+          </div>
+          <!-- <div style="width: 100%">
+            <div id="blocklyDiv" style="display: inline-block; height: 480px; width: 58%"></div>
+          </div> -->
+        </div>
+      </td>
+    </tr>
+  </table>
+</body>
+
+<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+  <category name="Mars Rover control" colour=200>
+    <block type="move_forward"></block>
+    <block type="move_backward"></block>
+    <block type="rover_stop"></block>
+    <block type="turn_left"></block>
+    <block type="turn_right"></block>
+    <block type="wait_seconds"></block>
+    <block type="read_angle"></block>
+    <block type="object_detect"></block>
+    <block type="read_sensor1"></block>
+    <block type="read_sensor2"></block>
+  </category>
+  
+  <category name="Logic" colour="%{BKY_LOGIC_HUE}">
+    <block type="controls_if"></block>
+    <block type="logic_compare"></block>
+    <block type="logic_operation"></block>
+    <block type="logic_negate"></block>
+    <block type="logic_boolean"></block>
+  </category>
+  <category name="Loops" colour="%{BKY_LOOPS_HUE}">
+    <block type="controls_repeat_ext">
+      <value name="TIMES">
+        <block type="math_number">
+          <field name="NUM">10</field>
+        </block>
+      </value>
+    </block>
+    <block type="controls_whileUntil"></block>
+  </category>
+  <category name="Math" colour="%{BKY_MATH_HUE}">
+    <block type="math_number">
+      <field name="NUM">123</field>
+    </block>
+    <block type="math_arithmetic"></block>
+    <block type="math_single"></block>
+  </category>
+  <category name="Text" colour="%{BKY_TEXTS_HUE}">
+    <block type="text"></block>
+    <block type="text_length"></block>
+    <block type="text_print"></block>
+    <block type="console_print"></block>
+  </category>
+</xml> 
+<script>
+  // create name space 
+  let Code = {};
+
+  // blockly workspae. holing blocks 
+  Code.workspace = null;
+
+  // variabls 
+  let runnerPid = 0;
+  let myInterpreter = null
+  let sensor1 = 0;
+  let sensor2 = 0;
+  let sensor3 = 0;
+  let sensor4 = 0;
+  let angle = 0;
+  let label_1 = 0;
+  let label_2 = 0;
+  // CoPlay control channel websocket variable 
+  let colinkWs;  
+  // CoPlay cam channel websocket variable
+  let ws;        
+
+  // output screen 
+  const outputArea = document.getElementById('output');
+  // deep learning variables
+  let net;
+  let infer_result;
+
+  const angle_disp = document.getElementById('angle');
+  function updateAngle() {
+    // Update the content of the element with the new number
+    angle_disp.textContent = angle;
+  }
+  setInterval(updateAngle, 100);
+
+  // fornt sensor value display
+  const dist_disp_1 = document.getElementById('frontSensor');
+  function updateFrontSensor() {
+    // Update the content of the element with the new number
+    dist_disp_1.textContent = sensor1;
+  }
+  setInterval(updateFrontSensor, 100);
+
+  // left sensor value display
+  const dist_disp_2 = document.getElementById('leftSensor');
+  function updateLeftSensor() {
+    // Update the content of the element with the new number
+    dist_disp_2.textContent = sensor2;
+  }
+  setInterval(updateLeftSensor, 100);
+
+  // right sensor value display
+  const dist_disp_3 = document.getElementById('rightSensor');
+  function updateRightSensor() {
+    // Update the content of the element with the new number
+    dist_disp_3.textContent = sensor3;
+  }
+  setInterval(updateRightSensor, 100);
+
+  // rear sensor value display
+  const dist_disp_4 = document.getElementById('rearSensor');
+  function updateRearSensor() {
+    // Update the content of the element with the new number
+    dist_disp_4.textContent = sensor4;
+  }
+  setInterval(updateRearSensor, 100);
+
+  // numbr of labels display 
+  const dist_disp_5 = document.getElementById('label_1');
+  function updateLabel1() {
+    // Update the content of the element with the new number
+    dist_disp_5.textContent = label_1;
+  }
+  setInterval(updateLabel1, 1000);
+
+  const dist_disp_6 = document.getElementById('label_2');
+  function updateLabel2() {
+    // Update the content of the element with the new number
+    dist_disp_6.textContent = label_2;
+  }
+  setInterval(updateLabel2, 1000);
+
+  // function for load blocks 
+  Code.loadBlocks = function(defaultXml) {
+    try {
+      var loadOnce = window.sessionStorage.loadOnceBlocks;
+    } catch(e) {
+      // Firefox sometimes throws a SecurityError when accessing sessionStorage.
+      // Restarting Firefox fixes this, so it looks like a bug.
+      var loadOnce = null;
+    }
+    if ('BlocklyStorage' in window && window.location.hash.length > 1) {
+      // An href with #key trigers an AJAX call to retrieve saved blocks.
+      BlocklyStorage.retrieveXml(window.location.hash.substring(1));
+    } else if (loadOnce) {
+      // Language switching stores the blocks during the reload.
+      delete window.sessionStorage.loadOnceBlocks;
+      var xml = Blockly.utils.xml.textToDom(loadOnce);
+      Blockly.Xml.domToWorkspace(xml, Code.workspace);
+    } else if (defaultXml) {
+      // Load the editor with default starting blocks.
+      var xml = Blockly.utils.xml.textToDom(defaultXml);
+      Blockly.Xml.domToWorkspace(xml, Code.workspace);
+    } else if ('BlocklyStorage' in window) {
+      // Restore saved blocks in a separate thread so that subsequent
+      // initialization is not affected from a failed load.
+      window.setTimeout(BlocklyStorage.restoreBlocks, 0);
+    }
+  };
+  // bind button click 
+  Code.bindClick = function(el, func) {
+    if (typeof el === 'string') {
+      el = document.getElementById(el);
+    }
+    el.addEventListener('click', func, true);
+    function touchFunc(e) {
+      // Prevent code from being executed twice on touchscreens.
+      e.preventDefault();
+      func(e);
+    }
+    el.addEventListener('touchend', touchFunc, true);
+  };
+
+  // workspace injecting 
+  Code.workspace = Blockly.inject('control-container',
+      {media: './',
+        toolbox: document.getElementById('toolbox')});
+
+  // An href with #key triggers an AJAX call to retrieve saved blocks.
+  if ('BlocklyStorage' in window && window.location.hash.length > 1) {
+    BlocklyStorage.retrieveXml(window.location.hash.substring(1));
+  }
+
+  // Add to reserved word list: Local variables in execution environment (runJS)
+  // and the infinite loop detection function.
+  Blockly.JavaScript.addReservedWords('code,timeouts,checkTimeout');
+
+  // load block 
+  Code.loadBlocks('');
+
+  // function for block discarding 
+  Code.discard = function() {
+    var count = Code.workspace.getAllBlocks(false).length;
+    if (count < 2 ||
+        window.confirm(Blockly.Msg['DELETE_ALL_BLOCKS'].replace('%1', count))) {
+        Code.workspace.clear();
+        if (window.location.hash) {
+        window.location.hash = '';
+      }
+    }
+  };
+
+  // function for clearing output screen 
+  Code.resetStepUi = function(clearOutput) {
+    clearTimeout(runnerPid);
+    //demoWorkspace.highlightBlock(null);
+    runButton.disabled = '';
+    if (clearOutput) {
+      outputArea.value = 'Program output:\n=================';
+    }
+    myInterpreter = null;
+  }
+
+  // function for get robot positional angle 
+  Code.getAngle = function(){
+    return angle;
+  }
+
+
+  // Register the interpreter asynchronous function. waitForSeconds()
+  function initInterpreterWaitForSeconds(interpreter, globalObject) {
+    // Ensure function name does not conflict with variable names.
+    Blockly.JavaScript.addReservedWords('waitForSeconds');
+    const wrapper = interpreter.createAsyncFunction(
+      function(timeInSeconds, callback) {
+        // Delay the call to the callback.
+        setTimeout(callback, timeInSeconds * 1000);
+      });
+    interpreter.setProperty(globalObject, 'waitForSeconds', wrapper);
+  }
+
+  // Add custom function to acron interpreter 
+  Code.initApi = function (interpreter, globalObject) {
+    // Add an API function for the alert() block, generated for "text_print" blocks.
+    const wrapperAlert = function alert(text) {
+      text = arguments.length ? text : '';
+      outputArea.value += '\n' + text;
+    };
+    interpreter.setProperty(globalObject, 'alert',
+        interpreter.createNativeFunction(wrapperAlert));
+
+    // Add an API function for the prompt() block.
+    const wrapperPrompt = function prompt(text) {
+      return window.prompt(text);
+    };
+    interpreter.setProperty(globalObject, 'prompt',
+        interpreter.createNativeFunction(wrapperPrompt));
+
+    // Add an API function for highlighting blocks.
+    const wrapper = function(id) {
+      id = String(id || '');
+      return highlightBlock(id);
+    };
+    interpreter.setProperty(globalObject, 'highlightBlock',
+        interpreter.createNativeFunction(wrapper));
+
+    // robot move forward 
+    const wrapperEvtMoFo= function(){
+      return document.dispatchEvent(event_move_forward);
+    }
+    interpreter.setProperty(globalObject, 'move_forward_acorn',
+        interpreter.createNativeFunction(wrapperEvtMoFo));
+
+    // robot move forward 
+    const wrapperEvtMoBa= function(){
+      return document.dispatchEvent(event_move_backward);
+    }
+    interpreter.setProperty(globalObject, 'move_backward_acorn',
+        interpreter.createNativeFunction(wrapperEvtMoBa));
+
+    // robot turn left 
+    const wrapperTurnLeft = function(){
+      return document.dispatchEvent(event_turn_left);
+    }
+    interpreter.setProperty(globalObject, 'turn_left_acorn',
+        interpreter.createNativeFunction(wrapperTurnLeft));
+
+    // robot turn right
+    const wrapperTurnRight = function(){
+      return document.dispatchEvent(event_turn_right);
+    }
+    interpreter.setProperty(globalObject, 'turn_right_acorn',
+        interpreter.createNativeFunction(wrapperTurnRight));
+
+    // robot stop 
+    const wrapperEvtStop = function(){
+      return document.dispatchEvent(event_rover_stop);
+    }
+    interpreter.setProperty(globalObject, 'rover_stop_acorn',
+        interpreter.createNativeFunction(wrapperEvtStop));
+
+
+    // object detect 
+     const wrapperObjDetect = function(){
+      infer_start = true;
+    }
+    interpreter.setProperty(globalObject, 'object_detect_acorn',
+        interpreter.createNativeFunction(wrapperObjDetect));
+
+
+    // get robot positional angle 
+    const wrapperReadAngle = function(){
+      return angle;
+    }
+    interpreter.setProperty(globalObject, 'read_angle_acorn',
+        interpreter.createNativeFunction(wrapperReadAngle));
+
+    // get robot front distance sensor 
+    const wrapperReadSensor1 = function(){
+      return sensor1;
+    }
+    interpreter.setProperty(globalObject, 'read_front_sensor_acorn',
+        interpreter.createNativeFunction(wrapperReadSensor1));
+
+    // get robot rear distance sensor
+    const wrapperReadSensor2 = function(){
+      return sensor2;
+    }
+    interpreter.setProperty(globalObject, 'read_rear_sensor_acorn',
+        interpreter.createNativeFunction(wrapperReadSensor2));
+
+    // Add an API for the wait block.  See wait_block.js
+    initInterpreterWaitForSeconds(interpreter, globalObject);
+  }
+
+  // function for runnng block using acorn. called by Code.runJS
+  Code.runner = function(){
+    if (myInterpreter) {
+      const hasMore = myInterpreter.run();
+      if (hasMore) {
+        // Execution is currently blocked by some async call.
+        // Try again later.
+        runnerPid = setTimeout(Code.runner, 10);
+      } else {
+        // Program is complete.
+        outputArea.value += '\n\n<< Program complete >>';
+        Code.resetStepUi(false);
+      }
+    }
+  }
+
+  // function for run user javascript code 
+  Code.runJS = function(event) {
+    // Prevent code from being executed twice on touchscreens.
+    if (event.type === 'touchend') {
+      event.preventDefault();
+    }
+    if(!myInterpreter){
+      Code.resetStepUi(true);
+      var code = Blockly.JavaScript.workspaceToCode(Code.workspace);
+      runButton.disabled = 'disabled';
+      setTimeout(function() {
+        alert('Ready to execute the following code\n' +
+            '===================================\n' + code);
+        myInterpreter = new Interpreter(code, Code.initApi);
+        Code.runner();
+      }, 1);
+      return;
+    }
+  };
+
+  // UI & output clear when event occur
+  Code.workspace.addChangeListener(function(event) {
+    if (!event.isUiEvent) {
+      // Something changed.  Interpreter needs to be reloaded.
+      Code.resetStepUi(true);
+    }
+  });
+
+  // registering trash button handler 
+  Code.bindClick('trashButton',function() {Code.discard();});
+
+  // registering run button handler 
+  Code.bindClick('runButton', Code.runJS);
+
+  // registering window loading event 
+  window.addEventListener("load", function(evt){
+    let host = "cobot.center"
+    let port = 8287;
+    //let host = "192.168.0.77";
+    //let port = 8277
+    if (window.location.protocol == 'https:') {
+      port = 8287;
+      //port = 8277;
+    } else {
+      port = 8286;
+      //port = 8276;
+    }
+    // openning CoPlay channel 
+    openChannels(host, port);
+  });
+
+  // deep learning model loading 
+  Code.load_model = async function(){
+    console.log('loading moblienet...');
+    net = await mobilenet.load();
+    console.log('Successfully loaded model');
+  }
+
+  let class_a = false;
+  let class_b = false;
+  let infer_start = false;
+
+  // === deep learning code start === 
+  // Capturing image, inferencing, classifying 
+  const addExample = async classId => {
+    //classA.disabled = true;
+    if (classId == 0){
+      class_a = true;
+    }else if(classId == 1){
+      class_b = true;
+    }else if(classId == 2){
+      infer_start = true;
+    }
+  };
+
+  // When clicking a button, add an example for that class.
+  document.getElementById('classA').addEventListener('click', () => addExample(0));
+  document.getElementById('classB').addEventListener('click', () => addExample(1));
+  document.getElementById('classC').addEventListener('click', () => addExample(2));
+
+  // knn classifyer 
+  const classifier = knnClassifier.create();
+  // load mobileNet fre-trained model 
+  Code.load_model();
+
+  // === deep learning code end === 
+
+  // Custom event: move_forward 
+  const event_move_forward = new Event("move_forward")
+  document.addEventListener("move_forward", e => {
+    colinkWs.send("AU");
+  })
+
+  // Custom event: rover_stop
+  const event_rover_stop = new Event("rover_stop")
+  document.addEventListener("rover_stop", e => {
+    colinkWs.send("STOP");
+  })
+
+  // custom event: move_backward
+  const event_move_backward = new Event("move_backward")
+  document.addEventListener("move_backward", e => {
+    colinkWs.send("AD");
+  })
+
+  // Custom event: turn_left
+  const event_turn_left = new Event("turn_left")
+  document.addEventListener("turn_left", e => {
+    colinkWs.send("AL");
+  })
+
+  // Custom event: turn_right
+  const event_turn_right = new Event("turn_right")
+  document.addEventListener("turn_right", e => {
+    colinkWs.send("AR");
+  })
+
+   // Custom event: turn_right
+   const event_key_press = new Event("key_press")
+   document.addEventListener("key_press", e => {
+    if ((e.keyCode === 119) ||(e.keyCode === 87)) { // 'w' or 'W'  
+        console.log("uga-1");
+      }
+      if ((e.keyCode === 97) || (e.keyCode === 65)) {  // 'a' or 'A' 
+        console.log("uga-2");
+      }
+      if ((e.keyCode === 115) || (e.keyCode === 83)){  // 's' or 'S'
+        console.log("uga-3");
+      }
+      if ((e.keyCode === 100) || (e.keyCode === 68)){  // 'd' or 'D'
+        console.log("uga-4");
+      }
+   })
+
+  // To disable scroll for arrow keys and space key 
+  function disableScroll() { 
+    document.body.classList.add("stop-scrolling"); 
+  } 
+  // disable scroll 
+  let stopScroll = disableScroll();
+
+  // To change CoPlay control channel connect image 
+  function connImgChange(status){
+    if(status == "on"){
+      $("#connectId").attr("src", "connected.png");
+    }else if(status == "off"){
+      $("#connectId").attr("src", "disconnected.png");
+    }		
+  }
+  // To change CoPlay camera channel connect image 
+  function connCamImgChange(status){
+    if(status == "on"){
+      $("#camConnectId").attr("src", "connected.png");
+    }else if(status == "off"){
+      $("#camConnectId").attr("src", "disconnected.png");
+    }		
+  }
+
+  // CoPlay control channel selctor 
+  const channelMenu = document.querySelector('#channles')
+  let channlesApiUrl = "";
+  let saveChannle = []; 
+  let APIOption = {
+            mode: "sub",
+            channel: "btlb3pjpc98lsdbc0lj0",
+            track: "colink",
+            mime: 'video/jpeg'
+        }
+  // CoPlay cam channel selector 
+  const camChannelMenu = document.querySelector('#cam_channles')
+  let camChannlesApiUrl = "";
+  let camSaveChannle = []; 
+  let camAPIOption = {
+            mode: "sub",
+            channel: "btlb3pjpc98lsdbc0lj0",
+            track: "colink",
+            mime: 'video/jpeg'
+        }
+
+  
+  function openChannels(host, port){
+    if (window.location.protocol == 'https:') {
+      channlesApiUrl = `https://${host}:${port}/monitor/http/cmd?format=json&obj=channel&op=show`;
+    } else {
+      channlesApiUrl = `http://${host}:${port}/monitor/http/cmd?format=json&obj=channel&op=show`;
+    }
+    fetch(channlesApiUrl)
+      .then(function (response) {
+        return response.json()
+      })
+      .then(function (response) {
+        response.map((state, index) => {
+          const _option = document.createElement('option')
+          option = _option
+          saveChannle.push([state.name, state.id])
+          option.text = state.name
+          option.value = index
+          channelMenu.append(option)
+          APIOption.channel = saveChannle[0][1]
+          if (response[index].state === 1) {
+            option.text = option.text + "on using"
+          }
+        })
+      });
+    if (window.location.protocol == 'https:') {
+      camChannlesApiUrl = `https://${host}:${port}/monitor/http/cmd?format=json&obj=channel&op=show`;
+    } else {
+      camChannlesApiUrl = `http://${host}:${port}/monitor/http/cmd?format=json&obj=channel&op=show`;
+    }
+    //console.log(camChannlesApiUrl);
+    fetch(camChannlesApiUrl)
+      .then(function (response) {
+        return response.json()
+      })
+      .then(function (response) {
+        response.map((state, index) => {
+          const _option = document.createElement('option')
+          option = _option
+          camSaveChannle.push([state.name, state.id])
+          option.text = state.name
+          option.value = index
+          camChannelMenu.append(option)
+          camAPIOption.channel = camSaveChannle[0][1]
+          console.log(camAPIOption.channel)
+          if (response[index].state === 1) {
+            option.text = option.text + "on using"
+          }
+        })
+      });
+    
+    // "Open" button onClick - control channel 
+    document.getElementById("open").onclick = function (evt) {
+      if (window.location.protocol == 'https:') {
+          colinkUrl = `wss://${host}:${port}/pang/ws/${APIOption.mode}?channel=${APIOption.channel}&track=${APIOption.track}&mode=bundle`;
+      } else {
+        colinkUrl = `ws://${host}:${port}/pang/ws/${APIOption.mode}?channel=${APIOption.channel}&track=${APIOption.track}&mode=bundle`;
+      }
+      // creating websocket  
+      colinkWs = new WebSocket(colinkUrl);
+      // websocket open event 
+      colinkWs.onopen = function (evt) {
+        connImgChange("on");
+        console.log(colinkWs);
+        if (colinkWs) {
+          window.setInterval(() => {
+            if (colinkWs != null){
+              colinkWs.send("123")
+            console.log("heart beat from web")
+            }
+            
+          }, 5000)
+          window.addEventListener("gamepadconnected", function (e) {
+            console.log("Gamepad connected");
+          });
+          let down = false;
+          function keyHandler(e){
+            const key = event.key;
+            
+            if (down) return;
+            down = true;
+            console.log(e.keyCode, e.charCode);
+            // Rover control
+            if ((e.keyCode === 119) ||(e.keyCode === 87)) { // 'w' or 'W'  
+              colinkWs.send("AU");
+            }
+            if ((e.keyCode === 97) || (e.keyCode === 65)) {  // 'a' or 'A' 
+              colinkWs.send("AL");
+            }
+            if ((e.keyCode === 115) || (e.keyCode === 83)){  // 's' or 'S'
+              colinkWs.send("AD");
+            }
+            if ((e.keyCode === 100) || (e.keyCode === 68)){  // 'd' or 'D'
+              colinkWs.send("AR");
+            }
+            if (e.keyCode === 32){  // 'Space'  stop rover 
+              colinkWs.send("STOP");
+              // Prevent space key to trigger 
+              e.preventDefault();
+            }
+          }
+
+          function keyUpHandler(e){
+            down = false;
+          }
+
+          document.addEventListener("keydown", keyHandler);
+          document.addEventListener('keyup', keyUpHandler);
+        }
+      };
+      // websocket closing event 
+      colinkWs.onclose = function (evt) {
+        connImgChange("off")
+        document.removeEventListener("keydown", keyHandler);
+        document.removeEventListener('keyup', keyUpHandler);
+        colinkWs = null;
+      };
+
+      // websocket message event 
+      colinkWs.onmessage = function (evt) {
+        //console.log(evt.data);
+        if (typeof evt.data == "object") {
+          
+        } else if (typeof evt.data == "string") {
+          var a = evt.data.indexOf('a')
+          var b = evt.data.indexOf('b')
+          var c = evt.data.indexOf('c')
+          var d = evt.data.indexOf('d')
+          var e = evt.data.indexOf('e')
+          var f = evt.data.indexOf('f')
+          angle = parseInt(evt.data.substring(a+1, b), 10);
+          sensor1 = parseInt(evt.data.substring(b+1, c), 10);
+          sensor2 = parseInt(evt.data.substring(c+1, d), 10);
+          sensor3 = parseInt(evt.data.substring(d+1, e), 10);
+          sensor4 = parseInt(evt.data.substring(e+1, f), 10);
+          
+        } else {
+
+        }
+      };
+
+      // websocket error event 
+      colinkWs.onerror = function (evt) {
+        
+      };
+      return false;
+    };
+    // "Close" button onClick - control channel 
+    document.getElementById("close").onclick = function (evt) {
+      if (!colinkWs) {
+        return false;
+      }
+      if (colinkWs) {
+        connImgChange("off")
+        document.removeEventListener("keydown", keyHandler);
+        document.removeEventListener('keyup', keyUpHandler);
+        colinkWs.close();
+      }
+      return false;
+    };
+
+    // control channel menu change event 
+    channelMenu.onchange = function (e) { 
+      APIOption.channel = saveChannle[this.value][1];
+    }
+
+    // cam channel menu change event 
+    camChannelMenu.onchange = function (e) { 
+      camAPIOption.channel = camSaveChannle[this.value][1];
+    }
+
+    // "Open" button onClick - cam channel 
+    document.getElementById("cam_open").onclick = function(evt) {
+      if (window.location.protocol == 'https:') {
+        wsurl = `wss://${host}:${port}/pang/ws/${camAPIOption.mode}?channel=${camAPIOption.channel}&track=video`;
+      } else {
+        wsurl = `ws://${host}:${port}/pang/ws/${camAPIOption.mode}?channel=${camAPIOption.channel}&track=video`;
+      }
+      
+      // cam channel websocket 
+      ws = new WebSocket(wsurl);
+      ws.binaryType = 'arraybuffer';
+
+      // websocket open event 
+      ws.onopen = function(evt) {
+        connCamImgChange("on");
+      }
+
+      // websocket close event 
+      ws.onclose = function(evt) {
+        ws = null;
+        connCamImgChange("off");
+      }
+
+      // wevsocket message event 
+      
+      ws.onmessage = async function(evt) {
+        if (typeof evt.data == "object") {
+          draw(evt.data);
+          if(class_a == true){
+            console.log("add example 1");
+            const buffer = event.data;
+
+            // Create an Image object from the ArrayBuffer
+            const image = new Image();
+            let arrayBufferView = new Uint8Array( buffer );
+            const blob = new Blob([arrayBufferView], { type: 'image/jpeg' });
+            const imageURL = URL.createObjectURL(blob);
+            image.src = imageURL;
+  
+            // Wait for the Image object to load
+            await new Promise((resolve) => (image.onload = resolve));
+  
+            // Get the image data from the loaded Image object
+            //const imageData = tf.browser.fromPixels(image);
+            // Preprocess the image data
+            const preprocessed = net.infer(image, true);
+            classifier.addExample(preprocessed, 1);
+            class_a = false;
+            label_1 += 1;  
+            console.log(label_1);  
+      
+          }
+          if(class_b == true){
+            console.log("add example 2");
+            const buffer = event.data;
+
+            // Create an Image object from the ArrayBuffer
+            const image = new Image();
+            let arrayBufferView = new Uint8Array( buffer );
+            const blob = new Blob([arrayBufferView], { type: 'image/jpeg' });
+            const imageURL = URL.createObjectURL(blob);
+            image.src = imageURL;
+  
+            // Wait for the Image object to load
+            await new Promise((resolve) => (image.onload = resolve));
+  
+            // Get the image data from the loaded Image object
+            //const imageData = tf.browser.fromPixels(image);
+            // Preprocess the image data
+            const preprocessed = net.infer(image, true);
+            classifier.addExample(preprocessed, 2);
+            class_b = false;
+            label_2 += 1;
+            console.log(label_2);  
+          }
+          if (classifier.getNumClasses() > 0 && infer_start == true) {
+            // Create an Image object from the ArrayBuffer
+            const buffer = event.data;
+            const image = new Image();
+            let arrayBufferView = new Uint8Array( buffer );
+            const blob = new Blob([arrayBufferView], { type: 'image/jpeg' });
+            const imageURL = URL.createObjectURL(blob);
+            image.src = imageURL;
+  
+            // Wait for the Image object to load
+            await new Promise((resolve) => (image.onload = resolve));
+            // Get the image data from the loaded Image object
+            //const imageData = tf.browser.fromPixels(imageSiva);
+            // Get the activation from mobilenet from the webcam.            
+            const activation = net.infer(image, 'conv_preds'); 
+            // Get the most likely class and confidences from the classifier module.
+            const result = await classifier.predictClass(activation);
+            console.log(result.classIndex)
+            if(result.classIndex == 0)
+              window.alert("Image is Label 1.");
+            else
+              window.alert("Image is Label 2.");
+            infer_start = false;
+          }
+        } else if (typeof evt.data == "string") {
+         
+        } else {
+        
+        }
+      }
+      // wesocket error event 
+      ws.onerror = function(evt) {
+        
+      }
+      return false;
+    };
+
+    // close button onClick - cam channel 
+    document.getElementById("cam_close").onclick = function(evt) {
+      if (!ws) {
+        return false;
+      }
+      connCamImgChange("off")
+      ws.close();
+      return false;
+    };
+  } // End of openChannels()
+  
+  // cam image draw code 
+  let canvas = document.getElementById('canvas');
+  let ctx = canvas.getContext('2d');
+  let imageSize = {
+    width : 320,
+    height : 240
+  }
+  window.onload = () => {
+    canvas.style.width = 320;
+    canvas.style.height = 240;
+  }
+  async function draw(data) {
+    let arrayBufferView = new Uint8Array( data );
+    let blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+    let urlCreator = window.URL || window.webkitURL;
+    let imageUrl = urlCreator.createObjectURL( blob );
+    let img  = new Image();
+    let imageData = imageUrl  
+    img.src = imageData;
+    
+    img.onload = async function(){
+      canvas.style.width = imageSize.width;
+      canvas.style.height = imageSize.height;
+      canvas.width = imageSize.width;
+      canvas.height = imageSize.height;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.save();
+      ctx.drawImage(img,0, 0,imageSize.width,imageSize.height);
+      ctx.restore();
+    };
+  }  // end of draw()
+</script>
+
+</html>

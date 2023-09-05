@@ -194,6 +194,7 @@ void setID() {
   // initing LOX1
   if(!lox1.begin(LOX1_ADDRESS)) {
     Serial.println(F("Failed to boot first VL53L0X"));
+    digitalWrite(CONNECTED, LOW);
     while(1){
       if(!lox1.begin(LOX1_ADDRESS)){
         break;
@@ -485,6 +486,7 @@ void loop() {
   client.poll();
   beat_count++;
   if(beat_count > 5){
+    digitalWrite(CONNECTED, !digitalRead(CONNECTED));
     String data = 'a'+String(current_angle)+'b'+String(sensor1)+'c'+String(sensor2)+'d'+String(sensor3)+'e'+String(sensor4)+'f';
     client.send(data);
     beat_count = 0;

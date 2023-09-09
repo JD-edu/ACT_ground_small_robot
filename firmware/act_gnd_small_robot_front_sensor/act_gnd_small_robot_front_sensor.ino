@@ -24,16 +24,16 @@ unsigned long timer = 0;
 
 #define CONNECTED   23
 
-#define WIFI_SSID  "SK_WiFiGIGA73BA_2.4G"
-#define WIFI_PASSWD "1609043407"
+#define WIFI_SSID  "jdedu9807"
+#define WIFI_PASSWD "jdedu9807"
 
 String macAddress = "";
 String ipAddress = "";
 
-const char *websockets_server_host = "cobot.center";
-const uint16_t websockets_server_port = 8286;
-//const char *websockets_server_host = "192.168.0.77";
-//const uint16_t websockets_server_port = 8276;
+//const char *websockets_server_host = "cobot.center";
+//const uint16_t websockets_server_port = 8286;
+const char *websockets_server_host = "192.168.0.77";
+const uint16_t websockets_server_port = 8276;
 using namespace websockets;
 WebsocketsClient client;
 
@@ -358,8 +358,20 @@ void setup() {
 
   client.onMessage(onMessageCallback);
   client.onEvent(onEventsCallback);
-  // c3rl3c86n88jq9lrl3gg MarsRover-1
-  while (!client.connect(websockets_server_host, websockets_server_port, "/pang/ws/pub?channel=c3rl3c86n88jq9lrl3gg&track=colink&mode=bundle"))
+  // c3rl3c86n88jq9lrl3gg LegoMars-1
+  // c3rl3f86n88jq9lrl3hg LegoMars-2
+  // c3rl3jg6n88jq9lrl3ig LegoMars-3
+  // c3rl3l06n88jq9lrl3jg LegoMars-4
+  // c3rl3to6n88jq9lrl3lg LegoMars-5
+  // c3rl4006n88jq9lrl3mg LegoMars-6
+  // c3rl4286n88jq9lrl3ng LegoMars-7
+  // c3rl43o6n88jq9lrl3og LegoMars-8
+  // c3rl4586n88jq9lrl3pg LegoMars-9
+  // cakjdd4k058s72qr0prg MarsCamera-1
+  // cakjdgsk058s72qr0psg MarsCamera-2
+  // cakjdjck058s72qr0ptg MarsCamera-3rsCAmera-4
+
+  while (!client.connect(websockets_server_host, websockets_server_port, "/pang/ws/pub?channel=c3rl4006n88jq9lrl3mg&track=colink&mode=bundle"))
   {
       delay(500);
       Serial.print(".");
@@ -501,3 +513,5 @@ void loop() {
     Serial.println(sensor4);
   }
 }
+
+  // cakjdmck058s72qr0pug Ma

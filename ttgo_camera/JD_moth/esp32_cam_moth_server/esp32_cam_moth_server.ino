@@ -22,12 +22,12 @@
  *  WiFi
  **************************************/
 #define WIFI_SSID   "jdedu9807"
-#define WIFI_PASSWD ""
+#define WIFI_PASSWD "jdedu9807"
 
 // Moth server setting 
 //const char* websockets_server_host = "cobot.center";
 //const uint16_t websockets_server_port = 8286;
-const char* websockets_server_host = "192.168.0.3";
+const char* websockets_server_host = "192.168.0.77";
 const uint16_t websockets_server_port = 8276;
 using namespace websockets;
 WebsocketsClient client;
@@ -223,20 +223,21 @@ void setupNetwork()
       Mars rover 2023 mass product version 
     */
 
-    // c40hp6epjh65aeq6ne50 MarsCam-1
-    // c40i40upjh62aijsthsg MarsCam-2
-    // c43ntoo6n88qogc7r380 MarsCam-3
-    // c44ersg6n88ud21av5i0 MarsCam-4
-    // c59hnot94817n3gg4pdg MarsCam-5
-    // c5b65ht94816ij7k0ae0 MarsCam-6
-    // c5id4ol94818vov5m3ng MarsCam-7
-    // c5jqdgcbcv41909p63g0 MarsCam-8
-    // ca6s906pjh63qlu2ahh0 MarsCam-9
-    // ca6ve0fafa3hrd561qag MarsCam-10
-    // ca6ve4vafa3hrd561qcg MarsCam-11
-    // ca6veivafa3hrd561qe0 MarsCam-12
+  // c3rl3c86n88jq9lrl3gg LegoMars-1
+  // c3rl3f86n88jq9lrl3hg LegoMars-2
+  // c3rl3jg6n88jq9lrl3ig LegoMars-3
+  // c3rl3l06n88jq9lrl3jg LegoMars-4
+  // c3rl3to6n88jq9lrl3lg LegoMars-5
+  // c3rl4006n88jq9lrl3mg LegoMars-6
+  // c3rl4286n88jq9lrl3ng LegoMars-7
+  // c3rl43o6n88jq9lrl3og LegoMars-8
+  // c3rl4586n88jq9lrl3pg LegoMars-9
+  // cakjdd4k058s72qr0prg MarsCamera-1
+  // cakjdgsk058s72qr0psg MarsCamera-2
+  // cakjdjck058s72qr0ptg MarsCamera-3
+  // cakjdmck058s72qr0pug MarsCAmera-4
 
-    while(!client.connect(websockets_server_host, websockets_server_port, "/pang/ws/pub?channel=c5b65ht94816ij7k0ae0&track=video")) { 
+    while(!client.connect(websockets_server_host, websockets_server_port, "/pang/ws/pub?channel=c3rl4586n88jq9lrl3pg&track=video")) { 
         delay(500);
         Serial.print(".");
         oled.clear();

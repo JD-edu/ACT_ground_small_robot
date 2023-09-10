@@ -571,16 +571,16 @@
 
   // registering window loading event 
   window.addEventListener("load", function(evt){
-    //let host = "cobot.center"
-    //let port = 8287;
-    let host = "192.168.0.77";
-    let port = 8277
+    let host = "cobot.center"
+    let port = 8287;
+    //let host = "192.168.0.77";
+    //let port = 8277
     if (window.location.protocol == 'https:') {
-      //port = 8287;
-      port = 8277;
+      port = 8287;
+      //port = 8277;
     } else {
-      //port = 8286;
-      port = 8276;
+      port = 8286;
+      //port = 8276;
     }
     // openning CoPlay channel 
     openChannels(host, port);

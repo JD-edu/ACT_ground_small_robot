@@ -349,8 +349,8 @@ void loop() {
     }
   }
     
-  client.poll();
-  beat_count++;
+  //client.poll();
+  /*beat_count++;
   if(beat_count > 1000){
     String data = 'a'+String(current_angle)+'b'+String(sensor1)+'c'+String(sensor2)+'d'+String(sensor3)+'e'+String(sensor4)+'f';
     client.send(data);
@@ -364,5 +364,5 @@ void loop() {
     Serial.print(sensor3);
     Serial.print(' ');
     Serial.println(sensor4);
-  }
+  }*/
 }

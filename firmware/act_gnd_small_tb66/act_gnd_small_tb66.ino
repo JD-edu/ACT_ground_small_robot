@@ -49,8 +49,8 @@ Tb6612fng motors2(16, 5, 17, 18, 4, 2, 15);
 // set the pins to shutdown
 #define SHT_LOX1 32
 #define SHT_LOX2 33
-#define SHT_LOX3 3
-#define SHT_LOX4 19
+#define SHT_LOX3 19
+#define SHT_LOX4 3
 
 #define LOX1_ADDRESS 0x40
 #define LOX2_ADDRESS 0x41
@@ -123,7 +123,7 @@ void read_dual_sensors() {
   lox1.rangingTest(&measure1, false); // pass in 'true' to get debug data printout!
   lox2.rangingTest(&measure2, false); // pass in 'true' to get debug data printout!
   lox3.rangingTest(&measure3, false); // pass in 'true' to get debug data printout!
-  //lox4.rangingTest(&measure4, false); // pass in 'true' to get debug data printout!
+  lox4.rangingTest(&measure4, false); // pass in 'true' to get debug data printout!
 
   // print sensor one reading
   if(measure1.RangeStatus != 4) {     // if not out of range
@@ -144,11 +144,11 @@ void read_dual_sensors() {
     //  Serial.print("Out of range");
   }
   // print sensor four reading
-  //if(measure3.RangeStatus != 4) {
-  //  sensor4 = measure4.RangeMilliMeter;
-  //} else {
+  if(measure3.RangeStatus != 4) {
+    sensor4 = measure4.RangeMilliMeter;
+  } else {
     //  Serial.print("Out of range");
-  //}
+  }
 }
 
 void setID() {
@@ -195,7 +195,7 @@ void setID() {
       }
     }
   }
-  
+
   // activating LOX3
   digitalWrite(SHT_LOX3, HIGH);
   delay(10);
@@ -209,7 +209,7 @@ void setID() {
       }
     };
   }
-/*
+
   // activating LOX4
   digitalWrite(SHT_LOX4, HIGH);
   delay(10);
@@ -221,7 +221,7 @@ void setID() {
         break;
       }
     };
-  }*/
+  }
 }
 
 void go_forward(){

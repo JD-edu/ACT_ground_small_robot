@@ -121,8 +121,8 @@ void onEventsCallback(WebsocketsEvent event, String data) {
 void read_dual_sensors() {
   
   lox1.rangingTest(&measure1, false); // pass in 'true' to get debug data printout!
-  lox2.rangingTest(&measure2, false); // pass in 'true' to get debug data printout!
-  lox3.rangingTest(&measure3, false); // pass in 'true' to get debug data printout!
+  //lox2.rangingTest(&measure2, false); // pass in 'true' to get debug data printout!
+  //lox3.rangingTest(&measure3, false); // pass in 'true' to get debug data printout!
   //lox4.rangingTest(&measure4, false); // pass in 'true' to get debug data printout!
 
   // print sensor one reading
@@ -132,17 +132,17 @@ void read_dual_sensors() {
     //Serial.print("Out of range");
   }
   // print sensor two reading
-  if(measure2.RangeStatus != 4) {
-    sensor2 = measure2.RangeMilliMeter;
-  } else {
+  //if(measure2.RangeStatus != 4) {
+  //  sensor2 = measure2.RangeMilliMeter;
+  //} else {
     //Serial.print("Out of range");
-  }
+  //}
   // print sensor three reading
-  if(measure3.RangeStatus != 4) {
-    sensor3 = measure3.RangeMilliMeter;
-  } else {
+  //if(measure3.RangeStatus != 4) {
+  //  sensor3 = measure3.RangeMilliMeter;
+  //} else {
     //  Serial.print("Out of range");
-  }
+  //}
   // print sensor four reading
   //if(measure3.RangeStatus != 4) {
   //  sensor4 = measure4.RangeMilliMeter;
@@ -181,7 +181,7 @@ void setID() {
     }
   }
   delay(10);
-  
+  /*
   // activating LOX2
   digitalWrite(SHT_LOX2, HIGH);
   delay(10);
@@ -195,7 +195,7 @@ void setID() {
       }
     }
   }
-  
+
   // activating LOX3
   digitalWrite(SHT_LOX3, HIGH);
   delay(10);
@@ -209,7 +209,7 @@ void setID() {
       }
     };
   }
-/*
+
   // activating LOX4
   digitalWrite(SHT_LOX4, HIGH);
   delay(10);

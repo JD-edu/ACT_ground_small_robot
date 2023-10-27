@@ -298,7 +298,7 @@ void setup() {
 
   delay(500);
   
-  /*byte status = mpu.begin();
+  byte status = mpu.begin();
   Serial.print(F("MPU6050 status: "));
   Serial.println(status);
   while(status!=0){ 
@@ -313,7 +313,7 @@ void setup() {
   mpu.upsideDownMounting = true; // uncomment this line if the MPU6050 is mounted upside-down
   mpu.calcOffsets(); // gyro and accelero
   Serial.println("Done!\n");
-  delay(1000);*/
+  delay(1000);
   Serial.println("VL53L0X: setup...");
   digitalWrite(SHT_LOX1, LOW);
   digitalWrite(SHT_LOX2, LOW);
@@ -349,15 +349,16 @@ void loop() {
   }
 
   if((millis()-timer)>50){ // print data every 10ms
-    //mpu.update();
+    mpu.update();
     read_dual_sensors();
-    //current_angle = mpu.getAngleZ();
+    current_angle = mpu.getAngleZ();
 	  timer = millis();
   }
     
   client.poll();
   beat_count++;
   if(beat_count > 50){
+    digitalWrite(CONNECTED, !digitalRead(CONNECTED));
     String data = 'a'+String(current_angle)+'b'+String(sensor1)+'c'+String(sensor2)+'d'+String(sensor3)+'e'+String(sensor4)+'f';
     client.send(data);
     beat_count = 0;

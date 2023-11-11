@@ -300,7 +300,7 @@ void setup() {
   // cakjdd4k058s72qr0prg MarsCamera-1
   // cakjdgsk058s72qr0psg MarsCamera-2
   // cakjdjck058s72qr0ptg MarsCamera-3rsCAmera-4
-  while (!client.connect(websockets_server_host, websockets_server_port, "/pang/ws/pub?channel=c3rl43o6n88jq9lrl3og&track=colink&mode=bundle"))
+  while (!client.connect(websockets_server_host, websockets_server_port, "/pang/ws/pub?channel=c3rl3f86n88jq9lrl3hg&track=colink&mode=bundle"))
   {
       delay(500);
       Serial.print(".");

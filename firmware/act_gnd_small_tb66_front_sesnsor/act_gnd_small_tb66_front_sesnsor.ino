@@ -30,21 +30,21 @@ MPU6050 mpu(Wire);
 
 #define CONNECTED   23
 
-#define WIFI_SSID  "SK_WiFiGIGA73BA_2.4G"
-#define WIFI_PASSWD "1609043407"
+#define WIFI_SSID  "jdedu9807"
+#define WIFI_PASSWD "jdedu9807"
 
 String macAddress = "";
 String ipAddress = "";
 
-const char *websockets_server_host = "cobot.center";
-const uint16_t websockets_server_port = 8286;
-//const char *websockets_server_host = "192.168.0.77";
-//const uint16_t websockets_server_port = 8276;
+//const char *websockets_server_host = "cobot.center";
+//const uint16_t websockets_server_port = 8286;
+const char *websockets_server_host = "192.168.0.77";
+const uint16_t websockets_server_port = 8276;
 using namespace websockets;
 WebsocketsClient client;
 
 Tb6612fng motors1(16, 14, 12, 13, 26, 27, 25);
-Tb6612fng motors2(16, 5, 17, 18, 4, 2, 15);
+Tb6612fng motors2(16, 5, 17, 18, 2, 4, 15);
 
 // set the pins to shutdown
 #define SHT_LOX1 32
@@ -56,6 +56,8 @@ Tb6612fng motors2(16, 5, 17, 18, 4, 2, 15);
 #define LOX2_ADDRESS 0x41
 #define LOX3_ADDRESS 0x42
 #define LOX4_ADDRESS 0x43
+
+#define speed 0.7
 
 // Sensor variables
 int sensor1,sensor2, sensor3, sensor4;
@@ -226,26 +228,26 @@ void setID() {
 
 void go_forward(){
   Serial.println("forward");
-  motors1.drive(1);
-  motors2.drive(1);
+  motors1.drive(-speed);
+  motors2.drive(-speed);
 }
 
 void go_backward(){
   Serial.println("backward");
-  motors1.drive(-1);
-  motors2.drive(-1);
+  motors1.drive(speed);
+  motors2.drive(speed);
 }
 
 void turn_right(){
   Serial.println("right");
-  motors1.drive(1);
-  motors2.drive(-1);
+  motors1.drive(-speed);
+  motors2.drive(speed);
 }
 
 void turn_left(){
-  Serial.println("left");
-  motors1.drive(-1);
-  motors2.drive(1); 
+   Serial.println("left");
+  motors1.drive(speed);
+  motors2.drive(-speed);
 }
 
 void stop(){
@@ -286,8 +288,19 @@ void setup() {
 
   client.onMessage(onMessageCallback);
   client.onEvent(onEventsCallback);
-  // c3rl3c86n88jq9lrl3gg MarsRover-1
-  while (!client.connect(websockets_server_host, websockets_server_port, "/pang/ws/pub?channel=c3rl3c86n88jq9lrl3gg&track=colink&mode=bundle"))
+  // c3rl3c86n88jq9lrl3gg LegoMars-1
+  // c3rl3f86n88jq9lrl3hg LegoMars-2
+  // c3rl3jg6n88jq9lrl3ig LegoMars-3
+  // c3rl3l06n88jq9lrl3jg LegoMars-4
+  // c3rl3to6n88jq9lrl3lg LegoMars-5
+  // c3rl4006n88jq9lrl3mg LegoMars-6
+  // c3rl4286n88jq9lrl3ng LegoMars-7
+  // c3rl43o6n88jq9lrl3og LegoMars-8
+  // c3rl4586n88jq9lrl3pg LegoMars-9
+  // cakjdd4k058s72qr0prg MarsCamera-1
+  // cakjdgsk058s72qr0psg MarsCamera-2
+  // cakjdjck058s72qr0ptg MarsCamera-3rsCAmera-4
+  while (!client.connect(websockets_server_host, websockets_server_port, "/pang/ws/pub?channel=c3rl43o6n88jq9lrl3og&track=colink&mode=bundle"))
   {
       delay(500);
       Serial.print(".");
@@ -358,6 +371,7 @@ void loop() {
   client.poll();
   beat_count++;
   if(beat_count > 50){
+    digitalWrite(CONNECTED, !digitalRead(CONNECTED));
     String data = 'a'+String(current_angle)+'b'+String(sensor1)+'c'+String(sensor2)+'d'+String(sensor3)+'e'+String(sensor4)+'f';
     client.send(data);
     beat_count = 0;

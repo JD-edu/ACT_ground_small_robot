@@ -403,7 +403,6 @@ void setup() {
   delay(500);
 }
 
-
 void loop() {
   
   if(Serial.available() > 0){

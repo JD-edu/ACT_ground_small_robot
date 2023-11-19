@@ -3,7 +3,8 @@
 
 #include <TB6612FNG.h>
 #include "Adafruit_VL53L0X.h"
-#include <MPU6050_light.h>
+#include "MPU9250.h"
+#include "eeprom_utils.h"
 #include "Wire.h"
 //#include <U8x8lib.h>
 #include "BluetoothSerial.h"
@@ -286,7 +287,18 @@ void setup() {
 
   client.onMessage(onMessageCallback);
   client.onEvent(onEventsCallback);
-  // c3rl3c86n88jq9lrl3gg MarsRover-1
+  // c3rl3c86n88jq9lrl3gg LegoMars-1
+  // c3rl3f86n88jq9lrl3hg LegoMars-2
+  // c3rl3jg6n88jq9lrl3ig LegoMars-3
+  // c3rl3l06n88jq9lrl3jg LegoMars-4
+  // c3rl3to6n88jq9lrl3lg LegoMars-5
+  // c3rl4006n88jq9lrl3mg LegoMars-6
+  // c3rl4286n88jq9lrl3ng LegoMars-7
+  // c3rl43o6n88jq9lrl3og LegoMars-8
+  // c3rl4586n88jq9lrl3pg LegoMars-9
+  // cakjdd4k058s72qr0prg MarsCamera-1
+  // cakjdgsk058s72qr0psg MarsCamera-2
+  // cakjdjck058s72qr0ptg MarsCamera-3rsCAmera-4
   while (!client.connect(websockets_server_host, websockets_server_port, "/pang/ws/pub?channel=c3rl3c86n88jq9lrl3gg&track=colink&mode=bundle"))
   {
       delay(500);
@@ -298,22 +310,6 @@ void setup() {
 
   delay(500);
   
-  byte status = mpu.begin();
-  Serial.print(F("MPU6050 status: "));
-  Serial.println(status);
-  while(status!=0){ 
-    delay(50);
-    byte status = mpu.begin();
-    Serial.print(F("MPU6050 status: "));
-    Serial.println(status);
-    if(status == 0)
-      break;
-  } // stop everything if could not connect to MPU6050
-  Serial.println(F("Calculating offsets, do not move MPU6050"));
-  mpu.upsideDownMounting = true; // uncomment this line if the MPU6050 is mounted upside-down
-  mpu.calcOffsets(); // gyro and accelero
-  Serial.println("Done!\n");
-  delay(1000);
   Serial.println("VL53L0X: setup...");
   digitalWrite(SHT_LOX1, LOW);
   digitalWrite(SHT_LOX2, LOW);
@@ -324,9 +320,46 @@ void setup() {
   Serial.println("VL53L0X: Starting...");
   setID();
   delay(500);
+
+  if (!mpu.setup(0x68)) {  // change to your own address
+    while (1) {
+      Serial.println("MPU connection failed. Please check your connection with `connection_check` example.");
+      delay(5000);
+    }
+  }
+
+#if defined(ESP_PLATFORM) || defined(ESP8266)
+  EEPROM.begin(0x80);
+#endif
+
+  delay(2000);
+
+  if(isCalibrated()){
+    // load from eeprom
+    loadCalibration();
+  }else{
+    // calibrate anytime you want to
+    Serial.println("Accel Gyro calibration will start in 5sec.");
+    Serial.println("Please leave the device still on the flat plane.");
+    mpu.verbose(true);
+    delay(5000);
+    mpu.calibrateAccelGyro();
+
+    Serial.println("Mag calibration will start in 5sec.");
+    Serial.println("Please Wave device in a figure eight until done.");
+    delay(5000);
+    mpu.calibrateMag();
+
+    print_calibration();
+    mpu.verbose(false);
+
+    // save to eeprom
+    saveCalibration();
+    loadCalibration();
+  }
+  delay(500);
   
 }
-
 
 void loop() {
   if(Serial.available() > 0){
@@ -348,16 +381,18 @@ void loop() {
     }
   }
 
-  if((millis()-timer)>50){ // print data every 10ms
-    mpu.update();
-    read_dual_sensors();
-    current_angle = mpu.getAngleZ();
-	  timer = millis();
-  }
+  if (mpu.update()) {
+    static uint32_t prev_ms = millis();
+    if (millis() > prev_ms + 25) {
+      print_roll_pitch_yaw();
+      read_dual_sensors(); 
+      prev_ms = millis();
+    }
+  } 
     
   client.poll();
   beat_count++;
-  if(beat_count > 50){
+  if(beat_count > 5){
     digitalWrite(CONNECTED, !digitalRead(CONNECTED));
     String data = 'a'+String(current_angle)+'b'+String(sensor1)+'c'+String(sensor2)+'d'+String(sensor3)+'e'+String(sensor4)+'f';
     client.send(data);
@@ -373,3 +408,48 @@ void loop() {
     Serial.println(sensor4);
   }
 }
+
+void print_roll_pitch_yaw() {
+    Serial.print("Yaw, Pitch, Roll: ");
+    Serial.print(mpu.getYaw(), 2);
+    Serial.print(", ");
+    Serial.print(mpu.getPitch(), 2);
+    Serial.print(", ");
+    Serial.println(mpu.getRoll(), 2);
+}
+
+
+
+
+void print_calibration() {
+    Serial.println("< calibration parameters >");
+    Serial.println("accel bias [g]: ");
+    Serial.print(mpu.getAccBiasX() * 1000.f / (float)MPU9250::CALIB_ACCEL_SENSITIVITY);
+    Serial.print(", ");
+    Serial.print(mpu.getAccBiasY() * 1000.f / (float)MPU9250::CALIB_ACCEL_SENSITIVITY);
+    Serial.print(", ");
+    Serial.print(mpu.getAccBiasZ() * 1000.f / (float)MPU9250::CALIB_ACCEL_SENSITIVITY);
+    Serial.println();
+    Serial.println("gyro bias [deg/s]: ");
+    Serial.print(mpu.getGyroBiasX() / (float)MPU9250::CALIB_GYRO_SENSITIVITY);
+    Serial.print(", ");
+    Serial.print(mpu.getGyroBiasY() / (float)MPU9250::CALIB_GYRO_SENSITIVITY);
+    Serial.print(", ");
+    Serial.print(mpu.getGyroBiasZ() / (float)MPU9250::CALIB_GYRO_SENSITIVITY);
+    Serial.println();
+    Serial.println("mag bias [mG]: ");
+    Serial.print(mpu.getMagBiasX());
+    Serial.print(", ");
+    Serial.print(mpu.getMagBiasY());
+    Serial.print(", ");
+    Serial.print(mpu.getMagBiasZ());
+    Serial.println();
+    Serial.println("mag scale []: ");
+    Serial.print(mpu.getMagScaleX());
+    Serial.print(", ");
+    Serial.print(mpu.getMagScaleY());
+    Serial.print(", ");
+    Serial.print(mpu.getMagScaleZ());
+    Serial.println();
+}
+

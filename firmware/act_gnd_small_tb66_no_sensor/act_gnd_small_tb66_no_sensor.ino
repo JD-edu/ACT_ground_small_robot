@@ -33,16 +33,16 @@ unsigned long timer = 0;
 
 #define CONNECTED   23
 
-#define WIFI_SSID  "SK_WiFiGIGA73BA_2.4G"
-#define WIFI_PASSWD "1609043407"
+#define WIFI_SSID  "jdedu9807"
+#define WIFI_PASSWD "jdedu9807"
 
 String macAddress = "";
 String ipAddress = "";
 
-const char *websockets_server_host = "cobot.center";
-const uint16_t websockets_server_port = 8286;
-//const char *websockets_server_host = "192.168.0.77";
-//const uint16_t websockets_server_port = 8276;
+//const char *websockets_server_host = "cobot.center";
+//const uint16_t websockets_server_port = 8286;
+const char *websockets_server_host = "192.168.0.77";
+const uint16_t websockets_server_port = 8276;
 using namespace websockets;
 WebsocketsClient client;
 

@@ -57,7 +57,7 @@ Tb6612fng motors2(16, 5, 17, 18, 2, 4, 15);
 #define LOX3_ADDRESS 0x42
 #define LOX4_ADDRESS 0x43
 
-#define speed 0.7
+#define speed 0.5
 
 // Sensor variables
 int sensor1,sensor2, sensor3, sensor4;
@@ -300,7 +300,7 @@ void setup() {
   // cakjdd4k058s72qr0prg MarsCamera-1
   // cakjdgsk058s72qr0psg MarsCamera-2
   // cakjdjck058s72qr0ptg MarsCamera-3rsCAmera-4
-  while (!client.connect(websockets_server_host, websockets_server_port, "/pang/ws/pub?channel=c3rl3f86n88jq9lrl3hg&track=colink&mode=bundle"))
+  while (!client.connect(websockets_server_host, websockets_server_port, "/pang/ws/pub?channel=c3rl4286n88jq9lrl3ng&track=colink&mode=bundle"))
   {
       delay(500);
       Serial.print(".");
